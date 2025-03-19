@@ -8,8 +8,13 @@ add_button = sg.Button("添加")
 list_box = sg.Listbox(values=functions.get_todos(), key="todos",
                       enable_events=True, size=(45, 10))
 edit_button = sg.Button("编辑")
+complete_button = sg.Button("完成")
+exit_button = sg.Button("退出")
 
-layout = [[label], [input_box, add_button], [list_box, edit_button]]
+layout = [[label],
+          [input_box, add_button],
+          [list_box, edit_button, complete_button],
+          [exit_button]]
 
 window = sg.Window("My Todo App",
                    layout=layout,
@@ -29,6 +34,7 @@ while True:
                 todos.append(new_todo)
                 functions.write_todos(todos)
                 window["todos"].update(values=todos)
+                window["todo"].update(value="")
         case "编辑":
             try:
                 if values["todo"] == "" or values["todo"] == "\n":
@@ -44,12 +50,26 @@ while True:
                     #todos = functions.get_todos()
                     #print(todos)
                     window["todos"].update(values=todos)
+                    window["todo"].update(value="")
             except IndexError:
                 print("No selection")
                 continue
             except ValueError:
                 print("Invalid input")
                 continue
+        case "完成":
+            try:
+                todo_to_complete = values["todos"][0]
+                todos = functions.get_todos()
+                todos.remove(todo_to_complete)
+                functions.write_todos(todos)
+                window["todos"].update(values=todos)
+                window["todo"].update(value="")
+            except IndexError:
+                print("No selection")
+                continue
+        case "退出":
+            break
         case "todos":
             try:
                 #window["todo"].update(value=values["todos"][0])
