@@ -2,17 +2,22 @@
 from modules import functions
 import FreeSimpleGUI as sg
 import time
+import os
+
+if not os.path.exists("todos.txt"):
+    with open("todos.txt", "w") as file:
+        pass
 
 sg.theme("LightBrown3")
 
 clock = sg.Text("", key="clock")
 label = sg.Text("输入 to-do")
 input_box: sg.Input = sg.InputText(tooltip="Enter todo", key="todo")
-add_button = sg.Button("添加", size=10)
+add_button = sg.Button("添加", size=10, key="add")
 list_box = sg.Listbox(values=functions.get_todos(), key="todos",
                       enable_events=True, size=(45, 10))
 edit_button = sg.Button("编辑")
-complete_button = sg.Button("完成")
+complete_button = sg.Button("完成", key="complete")
 exit_button = sg.Button("退出")
 
 layout = [[clock],
@@ -24,11 +29,12 @@ layout = [[clock],
 window = sg.Window("My Todo App",
                    layout=layout,
                    font=("helvetica", 18))
+
 while True:
     event, values = window.read(timeout=10)
     window["clock"].update(value=time.strftime("%b %d, %Y %H:%M:%S"))
     match event:
-        case "添加":
+        case "add":
             if values["todo"] == "" or values["todo"] == "\n":
                 sg.popup("Invalid", font=("helvetica", 16))
             else:
@@ -60,7 +66,7 @@ while True:
             except ValueError:
                 sg.popup("Invalid input", font=("helvetica", 16))
                 continue
-        case "完成":
+        case "complete":
             try:
                 todo_to_complete = values["todos"][0]
                 todos = functions.get_todos()
